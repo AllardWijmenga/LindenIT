@@ -6,6 +6,24 @@ if (!isLoggedIn()) {
   header('Location: index.php');
   exit;
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (isset($_POST['event-type'], $_POST['event-location'], $_POST['event-description'])) {
+    $type = trim($_POST['event-type']);
+    $location = trim($_POST['event-location']);
+    $description = trim($_POST['event-description']);
+  }
+
+  if (!empty($type) && !empty($location) && !empty($description)) {
+    try {
+      $stmt = $pdo->prepare("INSERT INTO events (type, location, description) VALUES (?, ?, ?)");
+      $stmt->execute([$type, $location, $description]);
+    } catch (PDOException $e) {
+      // Handle the error appropriately
+      echo "Something went wrong: " . $e->getMessage();
+    }
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -21,33 +39,16 @@ if (!isLoggedIn()) {
 <body>
   <!-- APP -->
   <div id="app-view">
-    <header>
-      <strong>⚡ GridWatch 2030</strong>
-      <nav id="nav">
-        <button data-tab="overzicht" class="active">Overzicht</button>
-        <button data-tab="storingen">Storingen</button>
-        <button data-tab="sensoren">Sensordata</button>
-        <button data-tab="onderhoud">Onderhoudsmelding</button>
-        <button data-tab="testtools">Testtools</button>
-      </nav>
-      <?php
-      if (isLoggedIn()) {
-        $user = currentUser();
-        echo '<span id="user-label">Ingelogd als: ' . htmlspecialchars($user['name']) . '</span>';
-      } else {
-        echo '<span id="user-label">Niet ingelogd</span>';
-      }
-      ?>
-      <form class="user" id="user-form" method="POST" action="logout.php">
-        <label id="user-label"></label>
-        <button id="logout" class="ghost">Uitloggen</button>
-      </form>
-    </header>
+    <?php
+    // Header is stored in includes/header.html
+    include __DIR__ . '/includes/header.html'; ?>
 
     <main>
       <!-- Overzicht -->
       <section id="tab-overzicht" class="tab">
-        <div id="health" class="health"></div>
+        <?php
+        $stationQuery = $pdo->query('SELECT * FROM stations');
+        ?>
         <h2>Transformatorstations</h2>
         <table id="stations-table">
           <thead>
@@ -58,31 +59,82 @@ if (!isLoggedIn()) {
               <th>Status</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            <?php
+            while ($row = $stationQuery->fetch()) {
+              echo '<tr>';
+              echo '<td>' . htmlspecialchars($row['id']) . '</td>';
+              echo '<td>' . htmlspecialchars($row['name']) . '</td>';
+              echo '<td>' . htmlspecialchars($row['location']) . '</td>';
+              echo '<td>' . htmlspecialchars($row['status']) . '</td>';
+              echo '</tr>';
+            }
+            ?>
+          </tbody>
         </table>
-        <button id="refresh-stations" class="ghost">Vernieuwen</button>
+        <form method="post" action="LindenFrontPage.php">
+          <button id="refresh" class="ghost">Vernieuwen</button>
+        </form>
       </section>
 
       <!-- Storingen -->
       <section id="tab-storingen" class="tab" hidden>
+        <?php
+        $eventQuery = $pdo->query('SELECT * FROM events ORDER BY timestamp DESC');
+        ?>
+
+        <form method="POST" action="LindenFrontPage.php" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="event-type">Soort event</label>
+            <input type="text" maxlength="99" id="event-type" name="event-type" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="event-location">Locatie</label>
+            <input type="text" maxlength="99" id="event-location" name="event-location" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="event-description">Beschrijving</label>
+            <input type="text" maxlength="255" id="event-description" name="event-description" class="form-input" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg mt-2">
+            Stuur
+          </button>
+        </form>
+
         <h2>Storingen en meldingen</h2>
         <table id="alerts-table">
           <thead>
             <tr>
               <th>Tijdstip</th>
               <th>Type</th>
+              <th>Locatie</th>
               <th>Beschrijving</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            <?php
+            while ($row = $eventQuery->fetch()) {
+              echo '<tr>';
+              echo '<td>' . htmlspecialchars($row['timestamp']) . '</td>';
+              echo '<td>' . htmlspecialchars($row['type']) . '</td>';
+              echo '<td>' . htmlspecialchars($row['location']) . '</td>';
+              echo '<td>' . htmlspecialchars($row['description']) . '</td>';
+              echo '</tr>';
+            }
+            ?>
+          </tbody>
         </table>
-        <button id="refresh-alerts" class="ghost">Vernieuwen</button>
+        <form method="post" action="LindenFrontPage.php">
+          <button id="refresh-alerts" class="ghost">Vernieuwen</button>
+        </form>
       </section>
 
-      <!-- Sensordata -->
+      <!-- Scenarios -->
       <section id="tab-sensoren" class="tab" hidden>
-        <h2>Sensorwaarden</h2>
-        <table id="sensor-table">
+        <h2>Scenarios</h2>
+
+
+        <!-- <table id="sensor-table">
           <thead>
             <tr>
               <th>Station</th>
@@ -92,67 +144,15 @@ if (!isLoggedIn()) {
             </tr>
           </thead>
           <tbody></tbody>
-        </table>
-        <button id="refresh-sensors" class="ghost">Vernieuwen</button>
-      </section>
-
-      <!-- Onderhoud formulier -->
-      <section id="tab-onderhoud" class="tab" hidden>
-        <h2>Onderhoudsmelding invullen</h2>
-        <form id="maint-form" class="card narrow">
-          <label>Station
-            <select id="maint-station" required></select>
-          </label>
-          <label>Prioriteit
-            <select id="maint-prio">
-              <option>Laag</option>
-              <option selected>Normaal</option>
-              <option>Hoog</option>
-            </select>
-          </label>
-          <label>Beschrijving
-            <textarea id="maint-desc" rows="4" required></textarea>
-          </label>
-          <button type="submit">Melding versturen</button>
-          <p id="maint-msg" class="msg"></p>
+        </table> -->
+        <form method="post" action="LindenFrontPage.php">
+          <button id="refresh-sensors" class="ghost">Vernieuwen</button>
         </form>
       </section>
 
-      <!-- Testtools -->
-      <section id="tab-testtools" class="tab" hidden>
-        <h2>Testtools voor scenario's</h2>
-        <p class="muted">Hiermee genereer je gebeurtenissen die in de logbestanden terechtkomen.</p>
-        <div class="grid">
-          <div class="card">
-            <h3>Applicatiefout</h3>
-            <p>Logt <code>ERROR Test exception generated</code>.</p>
-            <button id="btn-error" class="danger">Genereer foutmelding</button>
-          </div>
-          <div class="card">
-            <h3>Hoge belasting</h3>
-            <p>Maakt veel sensorrecords aan (database-activiteit, CPU, extra logging).</p>
-            <label>Aantal
-              <input id="records-count" type="number" value="1000" min="1" max="100000">
-            </label>
-            <button id="btn-records">Genereer sensorrecords</button>
-          </div>
-          <div class="card">
-            <h3>API-verkeer</h3>
-            <p>Roept <code>GET /api/stations</code> herhaald aan.</p>
-            <label>Aantal verzoeken
-              <input id="flood-count" type="number" value="40" min="1" max="500">
-            </label>
-            <button id="btn-flood">Start API-flood</button>
-            <progress id="flood-progress" value="0" max="1" hidden></progress>
-          </div>
-        </div>
-        <p id="tools-msg" class="msg"></p>
-      </section>
+
     </main>
   </div>
-
-  <div id="toast" class="toast" hidden></div>
-  <script src="app.js"></script>
 </body>
 
 </html>
