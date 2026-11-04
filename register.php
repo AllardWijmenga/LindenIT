@@ -121,7 +121,7 @@ $pageTitle = 'Registreren';
             </form>
 
             <div class="form-footer">
-                Al een account? <a href="login.php">Log hier in</a>
+                Al een account? <a href="index.php">Log hier in</a>
             </div>
         </div>
     </div>
