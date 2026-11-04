@@ -1,5 +1,11 @@
 <?php
-$test = "Hello, World!";
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/db.php';
+
+if (!isLoggedIn()) {
+  header('Location: index.php');
+  exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -13,25 +19,8 @@ $test = "Hello, World!";
 </head>
 
 <body>
-
-  <!-- LOGIN -->
-  <section id="login-view" class="center">
-    <form id="login-form" class="card narrow">
-      <h1>⚡ GridWatch 2030</h1>
-      <p class="muted">Asset Management Portal</p>
-      <label>Gebruikersnaam
-        <input id="username" autocomplete="username" required>
-      </label>
-      <label>Wachtwoord
-        <input id="password" type="password" autocomplete="current-password" required>
-      </label>
-      <button type="submit">Inloggen</button>
-      <p id="login-msg" class="msg"></p>
-    </form>
-  </section>
-
   <!-- APP -->
-  <div id="app-view" hidden>
+  <div id="app-view">
     <header>
       <strong>⚡ GridWatch 2030</strong>
       <nav id="nav">
@@ -41,10 +30,18 @@ $test = "Hello, World!";
         <button data-tab="onderhoud">Onderhoudsmelding</button>
         <button data-tab="testtools">Testtools</button>
       </nav>
-      <span class="user">
-        <span id="user-label"></span>
+      <?php
+      if (isLoggedIn()) {
+        $user = currentUser();
+        echo '<span id="user-label">Ingelogd als: ' . htmlspecialchars($user['name']) . '</span>';
+      } else {
+        echo '<span id="user-label">Niet ingelogd</span>';
+      }
+      ?>
+      <form class="user" id="user-form" method="POST" action="logout.php">
+        <label id="user-label"></label>
         <button id="logout" class="ghost">Uitloggen</button>
-      </span>
+      </form>
     </header>
 
     <main>
