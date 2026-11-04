@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GridWatch 2030</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <section id="login-view" class="center">
+    <form id="login-form" class="card narrow">
+      <h1>⚡ GridWatch 2030</h1>
+      <p class="muted">Asset Management Portal</p>
+      <label>Gebruikersnaam
+        <input id="username" autocomplete="username" required>
+      </label>
+      <label>Wachtwoord
+        <input id="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button type="submit">Inloggen</button>
+      <p id="login-msg" class="msg"></p>
+    </form>
+  </section>
+
+  <!-- APP -->
+  <div id="app-view" hidden>
+    <header>
+      <strong>⚡ GridWatch 2030</strong>
+      <nav id="nav">
+        <button data-tab="overzicht" class="active">Overzicht</button>
+        <button data-tab="storingen">Storingen</button>
+        <button data-tab="sensoren">Sensordata</button>
+        <button data-tab="onderhoud">Onderhoudsmelding</button>
+        <button data-tab="testtools">Testtools</button>
+      </nav>
+      <span class="user">
+        <span id="user-label"></span>
+        <button id="logout" class="ghost">Uitloggen</button>
+      </span>
+    </header>
+
+    <main>
+      <!-- Overzicht -->
+      <section id="tab-overzicht" class="tab">
+        <div id="health" class="health"></div>
+        <h2>Transformatorstations</h2>
+        <table id="stations-table">
+          <thead><tr><th>ID</th><th>Naam</th><th>Locatie</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <button id="refresh-stations" class="ghost">Vernieuwen</button>
+      </section>
+
+      <!-- Storingen -->
+      <section id="tab-storingen" class="tab" hidden>
+        <h2>Storingen en meldingen</h2>
+        <table id="alerts-table">
+          <thead><tr><th>Tijdstip</th><th>Type</th><th>Beschrijving</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <button id="refresh-alerts" class="ghost">Vernieuwen</button>
+      </section>
+
+      <!-- Sensordata -->
+      <section id="tab-sensoren" class="tab" hidden>
+        <h2>Sensorwaarden</h2>
+        <table id="sensor-table">
+          <thead><tr><th>Station</th><th>Vermogen (MW)</th><th>Temperatuur (°C)</th><th>Status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <button id="refresh-sensors" class="ghost">Vernieuwen</button>
+      </section>
+
+      <!-- Onderhoud formulier -->
+      <section id="tab-onderhoud" class="tab" hidden>
+        <h2>Onderhoudsmelding invullen</h2>
+        <form id="maint-form" class="card narrow">
+          <label>Station
+            <select id="maint-station" required></select>
+          </label>
+          <label>Prioriteit
+            <select id="maint-prio">
+              <option>Laag</option>
+              <option selected>Normaal</option>
+              <option>Hoog</option>
+            </select>
+          </label>
+          <label>Beschrijving
+            <textarea id="maint-desc" rows="4" required></textarea>
+          </label>
+          <button type="submit">Melding versturen</button>
+          <p id="maint-msg" class="msg"></p>
+        </form>
+      </section>
+
+      <!-- Testtools -->
+      <section id="tab-testtools" class="tab" hidden>
+        <h2>Testtools voor scenario's</h2>
+        <p class="muted">Hiermee genereer je gebeurtenissen die in de logbestanden terechtkomen.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>Applicatiefout</h3>
+            <p>Logt <code>ERROR Test exception generated</code>.</p>
+            <button id="btn-error" class="danger">Genereer foutmelding</button>
+          </div>
+          <div class="card">
+            <h3>Hoge belasting</h3>
+            <p>Maakt veel sensorrecords aan (database-activiteit, CPU, extra logging).</p>
+            <label>Aantal
+              <input id="records-count" type="number" value="1000" min="1" max="100000">
+            </label>
+            <button id="btn-records">Genereer sensorrecords</button>
+          </div>
+          <div class="card">
+            <h3>API-verkeer</h3>
+            <p>Roept <code>GET /api/stations</code> herhaald aan.</p>
+            <label>Aantal verzoeken
+              <input id="flood-count" type="number" value="40" min="1" max="500">
+            </label>
+            <button id="btn-flood">Start API-flood</button>
+            <progress id="flood-progress" value="0" max="1" hidden></progress>
+          </div>
+        </div>
+        <p id="tools-msg" class="msg"></p>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
