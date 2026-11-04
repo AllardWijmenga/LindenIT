@@ -1,11 +1,17 @@
+<?php
+$test = "Hello, World!";
+?>
+
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GridWatch 2030</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <!-- LOGIN -->
@@ -47,7 +53,14 @@
         <div id="health" class="health"></div>
         <h2>Transformatorstations</h2>
         <table id="stations-table">
-          <thead><tr><th>ID</th><th>Naam</th><th>Locatie</th><th>Status</th></tr></thead>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Naam</th>
+              <th>Locatie</th>
+              <th>Status</th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
         <button id="refresh-stations" class="ghost">Vernieuwen</button>
@@ -57,7 +70,13 @@
       <section id="tab-storingen" class="tab" hidden>
         <h2>Storingen en meldingen</h2>
         <table id="alerts-table">
-          <thead><tr><th>Tijdstip</th><th>Type</th><th>Beschrijving</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Tijdstip</th>
+              <th>Type</th>
+              <th>Beschrijving</th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
         <button id="refresh-alerts" class="ghost">Vernieuwen</button>
@@ -67,7 +86,14 @@
       <section id="tab-sensoren" class="tab" hidden>
         <h2>Sensorwaarden</h2>
         <table id="sensor-table">
-          <thead><tr><th>Station</th><th>Vermogen (MW)</th><th>Temperatuur (°C)</th><th>Status</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Station</th>
+              <th>Vermogen (MW)</th>
+              <th>Temperatuur (°C)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
         <button id="refresh-sensors" class="ghost">Vernieuwen</button>
@@ -131,4 +157,5 @@
   <div id="toast" class="toast" hidden></div>
   <script src="app.js"></script>
 </body>
+
 </html>
