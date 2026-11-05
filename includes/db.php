@@ -1,4 +1,5 @@
 <?php
+include __DIR__ . '/logging/logging.php';
 // Database connectie (PDO)
 
 $db_host = 'localhost';
@@ -19,5 +20,6 @@ try {
         ]
     );
 } catch (PDOException $e) {
+    logAction("ERROR - " . "ip " . $_SERVER['REMOTE_ADDR'], 'Database connection failed: ' . $e->getMessage());
     die('Het spijt ons, er was een fout opgetreden tijdens het laden van deze website. ERROR code: 277288: ' . htmlspecialchars($e->getMessage()));
 }

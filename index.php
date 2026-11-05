@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/logging/logging.php';
 
 // check if logged in, in which case this entire page is useless and they are an idiot.
 if (isLoggedIn()) {
@@ -43,9 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_name']  = $user['name'];
         $_SESSION['user_email'] = $user['email'];
         header('Location: LindenFrontPage.php');
+        logAction("INFO - " . "ip " . $_SERVER['REMOTE_ADDR'] . " - " . $user['name'] . ", " . $user['email'], 'Logged in.');
         exit;
     } else {
         $errors[] = 'Ongeldige inloggegevens.';
+        logAction("WARN - " . "ip " . $_SERVER['REMOTE_ADDR'] . " - " . $email, 'Failed login attempt.');
     }
 }
 

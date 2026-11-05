@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/logging/logging.php';
 
 if (!isLoggedIn()) {
   header('Location: index.php');
@@ -14,13 +15,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['event-description']);
   }
 
+  if (isset($_POST['clear-logs'])) {
+    clearLog();
+  }
+
   if (!empty($type) && !empty($location) && !empty($description)) {
     try {
       $stmt = $pdo->prepare("INSERT INTO events (type, location, description) VALUES (?, ?, ?)");
       $stmt->execute([$type, $location, $description]);
+      logAction("INFO - " . currentUser()['name'], "Added a new event: Type: $type, Location: $location, Description: $description");
     } catch (PDOException $e) {
       // Handle the error appropriately
       echo "Something went wrong: " . $e->getMessage();
+      logAction("ERROR - " . currentUser()['name'], "Failed to add a new event: Type: $type, Location: $location, Description: $description. Error: " . $e->getMessage());
     }
   }
 }
@@ -41,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div id="app-view">
     <?php
     // Header is stored in includes/header.html
-    include __DIR__ . '/includes/header.html'; ?>
+    include __DIR__ . '/includes/header.php'; ?>
 
     <main>
       <!-- Overzicht -->
@@ -81,8 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <section id="tab-storingen" class="tab" hidden>
         <?php
         $eventQuery = $pdo->query('SELECT * FROM events ORDER BY timestamp DESC');
+        logAction("INFO - " . currentUser()['name'], "Viewed the events page.");
         ?>
 
+        <h2>Storingen en meldingen</h2>
         <form method="POST" action="LindenFrontPage.php" novalidate>
           <div class="form-group">
             <label class="form-label" for="event-type">Soort event</label>
@@ -101,7 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </button>
         </form>
 
-        <h2>Storingen en meldingen</h2>
         <table id="alerts-table">
           <thead>
             <tr>
@@ -150,6 +158,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
       </section>
 
+      <!-- Log -->
+      <section id="tab-log" class="tab" hidden>
+        <script async>
+          document.addEventListener("DOMContentLoaded", async function() {
+            while (true) {
+              console.log("Fetching log data...");
+              fetch('includes/logging/app.log')
+                .then(response => response.text())
+                .then(data => {
+                  const logTableBody = document.querySelector('#log-table tbody');
+                  logTableBody.innerHTML = ''; // Clear existing rows
+
+                  const lines = data.trim().split('\n'); // turns the log data into an array of lines
+                  lines.forEach(line => {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.textContent = line;
+                    row.appendChild(cell);
+                    logTableBody.appendChild(row);
+                  }); // adds every line as a seperate line in the log list
+                })
+                .catch(error => console.error('Error fetching log data:', error));
+
+              // Refresh every 5 seconds
+              await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+          });
+        </script>
+        <h2>Log</h2>
+        <table id="log-table">
+          <thead>
+            <tr>
+              <th>Log</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <form action="LindenFrontPage.php" method="post">
+          <button type="submit" name="clear-logs">Clear Logs</button>
+        </form>
+        <form method="post" action="LindenFrontPage.php">
+          <button id="refresh-log" class="ghost">Vernieuwen</button>
+        </form>
 
     </main>
   </div>

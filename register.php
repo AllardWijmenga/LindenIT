@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/logging/logging.php';
 
 // Als de gebruiker al is ingelogd, stuur door naar dashboard
 if (isLoggedIn()) {
@@ -67,9 +68,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
             $statement->execute([$name, $hashed, $email]);
             header("location: LindenFrontPage.php?registered");
+            logAction("INFO - " . "ip " . $_SERVER['REMOTE_ADDR'] . " - " . $name . ", " . $email, 'Registered a new account.');
             exit();
         } catch (Exception $e) {
             echo "Something went wrong: " . $e;
+            logAction("ERROR - " . "ip " . $_SERVER['REMOTE_ADDR'] . " - " . $name . ", " . $email, 'Failed to register: ' . $e->getMessage());
         };
     }
 }

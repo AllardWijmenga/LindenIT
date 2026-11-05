@@ -20,8 +20,7 @@
         <button
             data-tab="overzicht"
             onclick="switchTab('overzicht')"
-            class="active"
-        >
+            class="active">
             Stations
         </button>
         <button data-tab="storingen" onclick="switchTab('storingen')">
@@ -30,10 +29,16 @@
         <button data-tab="sensoren" onclick="switchTab('sensoren')">
             Scenarios
         </button>
+        <button data-tab="log" onclick="switchTab('log')">Log</button>
     </nav>
-    <?php if (isLoggedIn()) { $user = currentUser(); echo '<span id="user-label"
+    <?php if (isLoggedIn()) {
+        $user = currentUser();
+        echo '<span id="user-label"
         >Ingelogd als: ' . htmlspecialchars($user['name']) . '</span
-    >'; } else { echo '<span id="user-label">Niet ingelogd</span>'; } ?>
+    >';
+    } else {
+        echo '<span id="user-label">Niet ingelogd</span>';
+    } ?>
     <form class="user" id="user-form" method="POST" action="logout.php">
         <label id="user-label"></label>
         <button id="logout" class="ghost">Uitloggen</button>
