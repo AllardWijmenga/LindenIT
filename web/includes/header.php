@@ -1,0 +1,46 @@
+<header>
+    <strong>⚡ GridWatch 2030</strong>
+    <script>
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll(".tab");
+            tabs.forEach((tab) => {
+                tab.hidden = tab.id !== "tab-" + tabName;
+            });
+
+            const buttons = document.querySelectorAll("#nav button");
+            buttons.forEach((button) => {
+                button.classList.toggle(
+                    "active",
+                    button.dataset.tab === tabName,
+                );
+            });
+        }
+    </script>
+    <nav id="nav">
+        <button
+            data-tab="overzicht"
+            onclick="switchTab('overzicht')"
+            class="active">
+            Stations
+        </button>
+        <button data-tab="storingen" onclick="switchTab('storingen')">
+            Storingen
+        </button>
+        <button data-tab="sensoren" onclick="switchTab('sensoren')">
+            Scenarios
+        </button>
+        <button data-tab="log" onclick="switchTab('log')">Log</button>
+    </nav>
+    <?php if (isLoggedIn()) {
+        $user = currentUser();
+        echo '<span id="user-label"
+        >Ingelogd als: ' . htmlspecialchars($user['name']) . '</span
+    >';
+    } else {
+        echo '<span id="user-label">Niet ingelogd</span>';
+    } ?>
+    <form class="user" id="user-form" method="POST" action="logout.php">
+        <label id="user-label"></label>
+        <button id="logout" class="ghost">Uitloggen</button>
+    </form>
+</header>

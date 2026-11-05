@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/logging/logging.php';
 
 if (!isLoggedIn()) {
   header('Location: index.php');
@@ -14,6 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['event-description']);
   }
 
+  if (isset($_POST['clear-logs'])) {
+    clearLog();
+  }
+
   if (!empty($type) && !empty($location) && !empty($description)) {
     try {
       $stmt = $pdo->prepare("INSERT INTO events (type, location, description) VALUES (?, ?, ?)");
@@ -23,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // Handle the error appropriately
       log_msg('ERROR', 'Could not save event: ' . $e->getMessage());
       echo "Something went wrong: " . $e->getMessage();
+      logAction("ERROR - " . currentUser()['name'], "Failed to add a new event: Type: $type, Location: $location, Description: $description. Error: " . $e->getMessage());
     }
   }
 }
@@ -43,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div id="app-view">
     <?php
     // Header is stored in includes/header.html
-    include __DIR__ . '/includes/header.html'; ?>
+    include __DIR__ . '/includes/header.php'; ?>
 
     <main>
       <!-- Overzicht -->
@@ -83,8 +89,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <section id="tab-storingen" class="tab" hidden>
         <?php
         $eventQuery = $pdo->query('SELECT * FROM events ORDER BY timestamp DESC');
+        logAction("INFO - " . currentUser()['name'], "Viewed the events page.");
         ?>
 
+        <h2>Storingen en meldingen</h2>
         <form method="POST" action="LindenFrontPage.php" novalidate>
           <div class="form-group">
             <label class="form-label" for="event-type">Soort event</label>
@@ -103,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </button>
         </form>
 
-        <h2>Storingen en meldingen</h2>
         <table id="alerts-table">
           <thead>
             <tr>
