@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mariadb:11
+    container_name: db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: gridwatch
+      MARIADB_USER: gridwatch
+      MARIADB_PASSWORD: gridwatch
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./Database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  webapp:
+    build: .
+    container_name: webapp
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_NAME: gridwatch
+      DB_USER: gridwatch
+      DB_PASSWORD: gridwatch
+      LOG_FILE: /logs/app.log
+      TZ: Europe/Amsterdam
+    ports:
+      - "8080:80"
+    volumes:
+      - ./web:/var/www/html
+      - ./logs:/logs
+
+volumes:
+  db_data:

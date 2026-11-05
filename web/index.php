@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Je hebt geen wachtwoord ingevuld.';
     }
 
-    $statement = $pdo->prepare("SELECT * FROM `users` WHERE `email` LIKE ?");
+    $statement = $pdo->prepare("SELECT * FROM `users` WHERE `email` = ?");
     $statement->execute([$email]);
     $user = $statement->fetch();
 
@@ -40,20 +40,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user && password_verify($password, $user['pass'])) {
         // login successful
+        session_regenerate_id(true);
         $_SESSION['user_id']    = $user['id'];
         $_SESSION['user_name']  = $user['name'];
         $_SESSION['user_email'] = $user['email'];
+        log_msg('INFO', "User {$user['name']} logged in");
         header('Location: LindenFrontPage.php');
         logAction("INFO - " . "ip " . $_SERVER['REMOTE_ADDR'] . " - " . $user['name'] . ", " . $user['email'], 'Logged in.');
         exit;
     } else {
+        log_msg('WARN', $user ? "Invalid password for user {$user['name']}" : "Unknown user $email");
         $errors[] = 'Ongeldige inloggegevens.';
         logAction("WARN - " . "ip " . $_SERVER['REMOTE_ADDR'] . " - " . $email, 'Failed login attempt.');
     }
 }
 
-$pageTitle = 'Inloggen';;
+$pageTitle = 'Inloggen';
 ?>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?= htmlspecialchars($pageTitle) ?> - GridWatch 2030</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
 <div class="container">
     <div class="form-wrapper">
@@ -92,3 +104,5 @@ $pageTitle = 'Inloggen';;
         </div>
     </div>
 </div>
+</body>
+</html>

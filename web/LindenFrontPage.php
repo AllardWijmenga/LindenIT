@@ -23,9 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
       $stmt = $pdo->prepare("INSERT INTO events (type, location, description) VALUES (?, ?, ?)");
       $stmt->execute([$type, $location, $description]);
-      logAction("INFO - " . currentUser()['name'], "Added a new event: Type: $type, Location: $location, Description: $description");
+      log_msg('INFO', "Event submitted: $type at $location");
     } catch (PDOException $e) {
       // Handle the error appropriately
+      log_msg('ERROR', 'Could not save event: ' . $e->getMessage());
       echo "Something went wrong: " . $e->getMessage();
       logAction("ERROR - " . currentUser()['name'], "Failed to add a new event: Type: $type, Location: $location, Description: $description. Error: " . $e->getMessage());
     }
@@ -139,71 +140,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <!-- Scenarios -->
       <section id="tab-sensoren" class="tab" hidden>
-        <h2>Scenarios</h2>
-
-
-        <!-- <table id="sensor-table">
-          <thead>
-            <tr>
-              <th>Station</th>
-              <th>Vermogen (MW)</th>
-              <th>Temperatuur (°C)</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table> -->
-        <form method="post" action="LindenFrontPage.php">
-          <button id="refresh-sensors" class="ghost">Vernieuwen</button>
-        </form>
+        <h2>Scenario's</h2>
+        <p class="muted">Hiermee genereer je gebeurtenissen die in het logbestand terechtkomen.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>Applicatiefout</h3>
+            <p>Logt <code>ERROR Test exception generated</code>.</p>
+            <button type="button" id="btn-error" class="danger">Genereer foutmelding</button>
+          </div>
+          <div class="card">
+            <h3>Hoge belasting</h3>
+            <p>Maakt veel sensorrecords aan (database-activiteit, CPU, extra logging).</p>
+            <label>Aantal
+              <input id="records-count" type="number" value="1000" min="1" max="100000">
+            </label>
+            <button type="button" id="btn-records">Genereer sensorrecords</button>
+          </div>
+          <div class="card">
+            <h3>API-verkeer</h3>
+            <p>Roept <code>GET /api/stations</code> herhaald aan.</p>
+            <label>Aantal verzoeken
+              <input id="flood-count" type="number" value="40" min="1" max="500">
+            </label>
+            <button type="button" id="btn-flood">Start API-flood</button>
+            <progress id="flood-progress" value="0" max="1" hidden></progress>
+          </div>
+        </div>
+        <p id="tools-msg" class="msg"></p>
       </section>
 
-      <!-- Log -->
-      <section id="tab-log" class="tab" hidden>
-        <script async>
-          document.addEventListener("DOMContentLoaded", async function() {
-            while (true) {
-              console.log("Fetching log data...");
-              fetch('includes/logging/app.log')
-                .then(response => response.text())
-                .then(data => {
-                  const logTableBody = document.querySelector('#log-table tbody');
-                  logTableBody.innerHTML = ''; // Clear existing rows
-
-                  const lines = data.trim().split('\n'); // turns the log data into an array of lines
-                  lines.forEach(line => {
-                    const row = document.createElement('tr');
-                    const cell = document.createElement('td');
-                    cell.textContent = line;
-                    row.appendChild(cell);
-                    logTableBody.appendChild(row);
-                  }); // adds every line as a seperate line in the log list
-                })
-                .catch(error => console.error('Error fetching log data:', error));
-
-              // Refresh every 5 seconds
-              await new Promise(resolve => setTimeout(resolve, 5000));
-            }
-          });
-        </script>
-        <h2>Log</h2>
-        <table id="log-table">
-          <thead>
-            <tr>
-              <th>Log</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <form action="LindenFrontPage.php" method="post">
-          <button type="submit" name="clear-logs">Clear Logs</button>
-        </form>
-        <form method="post" action="LindenFrontPage.php">
-          <button id="refresh-log" class="ghost">Vernieuwen</button>
-        </form>
 
     </main>
   </div>
+  <script src="tabs.js"></script>
+  <script src="scenarios.js"></script>
 </body>
 
 </html>
