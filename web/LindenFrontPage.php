@@ -168,6 +168,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <p id="tools-msg" class="msg"></p>
       </section>
+      <!-- Log -->
+      <section id="tab-log" class="tab" hidden>
+        <script async>
+          document.addEventListener("DOMContentLoaded", async function() {
+            while (true) {
+              console.log("Fetching log data...");
+              fetch('../logs/app.log')
+                .then(response => response.text())
+                .then(data => {
+                  const logTableBody = document.querySelector('#log-table tbody');
+                  logTableBody.innerHTML = ''; // Clear existing rows
+
+                  const lines = data.trim().split('\n'); // turns the log data into an array of lines
+                  lines.forEach(line => {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.textContent = line;
+                    row.appendChild(cell);
+                    logTableBody.appendChild(row);
+                  }); // adds every line as a seperate line in the log list
+                })
+                .catch(error => console.error('Error fetching log data:', error));
+
+              // Refresh every 5 seconds
+              await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+          });
+        </script>
+        <h2>Logbestand</h2>
+        <table id="log-table">
+          <thead>
+            <tr>
+              <th>Log</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Log entries will be populated here by JavaScript -->
+          </tbody>
+        </table>
+        <form method="post" action="LindenFrontPage.php">
+          <button type="submit" name="clear-logs" class="danger">Wis logbestand</button>
+        </form>
+      </section>
 
 
     </main>
