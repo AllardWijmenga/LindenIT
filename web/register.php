@@ -66,7 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         VALUES (null, ?, ?, ?, 'user', current_timestamp());"
             );
             $statement->execute([$name, $hashed, $email]);
-            header("location: LindenFrontPage.php?registered");
+            log_msg('INFO', "User $name registered");
+            header("location: index.php?registered");
             exit();
         } catch (Exception $e) {
             echo "Something went wrong: " . $e;
@@ -78,6 +79,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $pageTitle = 'Registreren';
 ?>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?= htmlspecialchars($pageTitle) ?> - GridWatch 2030</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
 <div class="container">
     <div class="form-wrapper">
@@ -126,3 +136,5 @@ $pageTitle = 'Registreren';
         </div>
     </div>
 </div>
+</body>
+</html>
