@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/db.php';
-require_once __DIR__ . '/includes/logging/logging.php';
+require_once __DIR__ . '/includes/logger.php';
 
 if (!isLoggedIn()) {
   header('Location: index.php');
@@ -16,7 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   if (isset($_POST['clear-logs'])) {
-    clearLog();
+    clear_log();
+    log_msg('INFO', 'Log cleared by ' . currentUser()['name']);
   }
 
   if (!empty($type) && !empty($location) && !empty($description)) {
@@ -27,8 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (PDOException $e) {
       // Handle the error appropriately
       log_msg('ERROR', 'Could not save event: ' . $e->getMessage());
-      echo "Something went wrong: " . $e->getMessage();
-      logAction("ERROR - " . currentUser()['name'], "Failed to add a new event: Type: $type, Location: $location, Description: $description. Error: " . $e->getMessage());
+      echo "Something went wrong: " . htmlspecialchars($e->getMessage());
     }
   }
 }
@@ -89,7 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <section id="tab-storingen" class="tab" hidden>
         <?php
         $eventQuery = $pdo->query('SELECT * FROM events ORDER BY timestamp DESC');
-        logAction("INFO - " . currentUser()['name'], "Viewed the events page.");
         ?>
 
         <h2>Storingen en meldingen</h2>
@@ -174,13 +173,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           document.addEventListener("DOMContentLoaded", async function() {
             while (true) {
               console.log("Fetching log data...");
-              fetch('../logs/app.log')
-                .then(response => response.text())
+              fetch('log.php')
+                .then(response => {
+                  if (!response.ok) throw new Error('HTTP ' + response.status);
+                  return response.text();
+                })
                 .then(data => {
                   const logTableBody = document.querySelector('#log-table tbody');
                   logTableBody.innerHTML = ''; // Clear existing rows
 
-                  const lines = data.trim().split('\n'); // turns the log data into an array of lines
+                  const lines = data.split('\n').filter(l => l.trim() !== ''); // turns the log data into an array of lines
                   lines.forEach(line => {
                     const row = document.createElement('tr');
                     const cell = document.createElement('td');

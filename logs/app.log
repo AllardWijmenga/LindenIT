@@ -12,3 +12,54 @@
 2026-11-05 11:40:50 INFO Application started
 2026-11-05 11:41:42 WARN Unknown user ra.wijmenga@gmaill.com
 2026-11-05 13:58:55 INFO User jan logged in
+2026-11-09 12:09:57 INFO Application started
+2026-11-09 12:24:59 INFO Application started
+2026-11-09 12:25:38 INFO User Allard registered
+2026-11-09 12:25:48 WARN Invalid password for user Allard
+2026-11-09 12:25:53 INFO User Allard logged in
+2026-11-09 12:28:47 INFO Event submitted: Boem shakalaka at Boekarest
+2026-11-09 12:29:02 ERROR Test exception generated
+2026-11-09 12:29:03 ERROR Test exception generated
+2026-11-09 12:29:03 ERROR Test exception generated
+2026-11-09 12:29:03 ERROR Test exception generated
+2026-11-09 12:29:19 INFO Generated 100 sensor records
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1
+2026-11-09 12:29:32 INFO GET /api/stations from 192.168.65.1

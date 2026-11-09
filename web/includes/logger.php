@@ -10,9 +10,20 @@ date_default_timezone_set(getenv('TZ') ?: 'Europe/Amsterdam');
 
 function log_msg(string $level, string $msg): void
 {
-    $file = getenv('LOG_FILE') ?: dirname(__DIR__, 2) . '/logs/app.log';
+    $file = log_file();
     $msg  = str_replace(["\r", "\n"], ' ', $msg); // voorkomt log-injectie
     @file_put_contents($file, date('Y-m-d H:i:s') . " $level $msg\n", FILE_APPEND | LOCK_EX);
+}
+
+function log_file(): string
+{
+    return getenv('LOG_FILE') ?: dirname(__DIR__, 2) . '/logs/app.log';
+}
+
+/** Maak het logbestand leeg. */
+function clear_log(): void
+{
+    @file_put_contents(log_file(), '', LOCK_EX);
 }
 
 function client_ip(): string
